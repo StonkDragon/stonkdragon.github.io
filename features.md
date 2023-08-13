@@ -54,11 +54,11 @@ done
 This prints the numbers `1` through `9`. The `for` loop is inclusive of the start, but exclusive of the end.
 
 ```
-if 1 2 == do
+if 1 2 == then
     "1 is equal to 2" puts
 else
     "1 is not equal to 2" puts
-done
+fi
 ```
 This prints `1 is not equal to 2` (as expected).
 

@@ -136,5 +136,69 @@ p p2:add => p
 ```
 This creates two new `Point`s, and then calls the `add` method on `p2` with `p` as an argument. It then assigns the result to `p`.
 
+### Enums
+Enums in Scale are similar to enums in C. For example:
+```
+enum Color
+    Red
+    Green
+    Blue
+end
+```
+This declares an enum named `Color` with three variants, `Red`, `Green`, and `Blue`.
+Each variant corresponds to an integer, starting at `0`. For example:
+```
+Color::Red => decl c: Color
+```
+This assigns the variant `Red` to the variable `c`. This is equivalent to:
+```
+0 => decl c: Color
+```
 
+### Unions
+Unions in Scale are similar to unions in C. For example:
+```
+union IntOrFloat
+    asInt: int
+    asFloat: float
+end
+```
+This declares a union named `IntOrFloat` with two variants, `asInt` and `asFloat`.
+Each variant can hold a different type. For example:
+```
+1 IntOrFloat::asInt => decl x: IntOrFloat
+```
+This assigns the variant `asInt` to the variable `x`, and sets the value to `1`.
+Unions in Scale are tagged, meaning an error will be thrown if you try to access the wrong variant. For example:
+```
+x.asFloat
+```
+This will throw an error, as `x` is currently the `asInt` variant.
+
+### C Interop
+Scale can interoperate with existing C code. For example:
+```
+expect function puts(string: [int8]): int
+```
+This imports the `puts` function from C. The `expect` keyword tells the compiler that the function will be implemented in a different translation unit and should not be mangled.
+
+```
+export function add(a: int, b: int): int
+    a b + return
+end
+```
+This exports the `add` function to C. The `export` keyword tells the compiler that the function should not be mangled to be easily callable from C.
+Calling Scale functions from C is as simple as including the `scale_interop.h` header file, and calling the function. For example:
+```c
+#include <stdio.h>
+#include "scale_interop.h"
+
+int main() {
+    printf("%d\n", add(1, 2));
+    return 0;
+}
+```
+This prints `3` to the console.
+
+### Examples
 For more detailed examples of the language, see the examples folder at [The Repository](https://github.com/StonkDragon/Scale)

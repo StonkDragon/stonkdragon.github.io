@@ -1,4 +1,4 @@
-
+## Features
 ### Stack
 In Scale, every operation uses the Stack. For example, adding two numbers would look like this:
 ```

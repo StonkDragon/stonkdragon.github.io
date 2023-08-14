@@ -5,3 +5,5 @@ Scale and [C](https://en.wikipedia.org/wiki/C_(programming_language)) can intero
 The Compiler is a [source-to-source compiler](https://en.wikipedia.org/wiki/Source-to-source_compiler), as it converts your source code to valid C code, that is then compiled by [Clang](https://en.wikipedia.org/wiki/Clang).
 
 Language features can be found [here](./features.md).
+
+[How to install Scale](./install.md).

@@ -183,11 +183,11 @@ expect function puts(string: [int8]): int
 This imports the `puts` function from C. The `expect` keyword tells the compiler that the function will be implemented in a different translation unit and should not be mangled.
 
 ```
-export function add(a: int, b: int): int
+export foreign function add(a: int, b: int): int
     a b + return
 end
 ```
-This exports the `add` function to C. The `export` keyword tells the compiler that the function should not be mangled to be easily callable from C.
+This exports the `add` function to C. The `export` keyword tells the compiler to generate a function declaration in `scale_interop.h`. The `foreign` keyword tells the compiler to not mangle the function symbol.
 Calling Scale functions from C is as simple as including the `scale_interop.h` header file, and calling the function. For example:
 ```c
 #include <stdio.h>

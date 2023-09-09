@@ -136,6 +136,17 @@ p p2:add => p
 ```
 This creates two new `Point`s, and then calls the `add` method on `p2` with `p` as an argument. It then assigns the result to `p`.
 
+#### Pass-by-Value
+By default, structs in scale are passed by reference. This means that when you pass a struct to a function, the function will receive a pointer to the struct, and any changes made to the struct will be reflected in the original struct. If you want to pass a struct by value, you have to put `*` before the type. For example:
+```
+function increment(p: *Point): Point
+    p.x 1 + => p.x
+    p.y 1 + => p.y
+    p return
+end
+```
+Any changes made to `p` will not be reflected in the original struct.
+
 ### Enums
 Enums in Scale are similar to enums in C. For example:
 ```
@@ -178,7 +189,7 @@ This will throw an error, as `x` is currently the `asInt` variant.
 ### C Interop
 Scale can interoperate with existing C code. For example:
 ```
-expect function puts(string: [int8]): int
+expect foreign function puts(string: [int8]): int
 ```
 This imports the `puts` function from C. The `expect` keyword tells the compiler that the function will be implemented in a different translation unit and should not be mangled.
 

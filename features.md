@@ -191,7 +191,7 @@ Scale can interoperate with existing C code. For example:
 ```
 expect foreign function puts(string: [int8]): int
 ```
-This imports the `puts` function from C. The `expect` keyword tells the compiler that the function will be implemented in a different translation unit and should not be mangled.
+This imports the `puts` function from C. The `expect` keyword tells the compiler that the function will be implemented in a different translation unit and the `foreign` keyword tells the compiler to not mangle the function symbol.
 
 ```
 export foreign function add(a: int, b: int): int

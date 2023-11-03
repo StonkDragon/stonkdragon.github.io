@@ -136,6 +136,47 @@ p p2:add => p
 ```
 This creates two new `Point`s, and then calls the `add` method on `p2` with `p` as an argument. It then assigns the result to `p`.
 
+#### Struct Initialization
+There are two ways to initialize a struct in Scale. The first is to use the `new` static function. For example:
+```
+Point::new => decl p: Point
+```
+This creates a new `Point` and assigns it to the variable `p`.
+
+The second way is to use property initialization. For example:
+```
+Point {
+    1 => x
+    2 => y
+} => decl p: Point
+```
+This creates a new `Point` with the `x` field set to `1` and the `y` field set to `2`, and assigns it to the variable `p`.
+With property initialization it is necessary to initialize all fields.
+
+#### Custom Property getters and setters
+Structs can have custom property getters and setters. For example:
+```
+struct MyStruct
+    decl someString: str
+        get()
+            "someString: " field + return
+        end
+        set(value)
+            value => field
+        end
+end
+```
+This declares a struct named `MyStruct` with a field named `someString`. The field has a custom getter and setter. The getter returns the value of the field with `someString: ` prepended to it. The setter sets the value of the field to the value passed to it.
+The getter and setter are called automatically when accessing the field. For example:
+```
+MyStruct {
+    "Hello, World!" => someString
+} => decl s: MyStruct
+
+s.someString puts
+```
+This prints `someString: Hello, World!` to the console.
+
 #### Pass-by-Value
 By default, structs in scale are passed by reference. This means that when you pass a struct to a function, the function will receive a pointer to the struct, and any changes made to the struct will be reflected in the original struct. If you want to pass a struct by value, you have to put `*` before the type. For example:
 ```
@@ -165,6 +206,17 @@ This assigns the variant `Red` to the variable `c`. This is equivalent to:
 ```
 0 => decl c: Color
 ```
+
+#### Variant Values
+Each variant can have a value associated with it. For example:
+```
+enum Color
+    [0xFF0000] Red
+    [0x00FF00] Green
+    [0x0000FF] Blue
+end
+```
+This assigns the value `0xFF0000` to the `Red` variant, `0x00FF00` to the `Green` variant, and `0x0000FF` to the `Blue` variant.
 
 ### Unions
 Unions in Scale are similar to unions in C. For example:
@@ -210,6 +262,140 @@ int main() {
 }
 ```
 This prints `3` to the console.
+
+### Arrays
+Arrays in Scale are similar to arrays in C. For example:
+```
+decl x: [int]
+```
+This declares a variable named `x` as an array of `int`s.
+This, however, does not allocate any memory for the array. To allocate memory, use the `new` keyword. For example:
+```
+new<int>[10] => x
+```
+This allocates enough memory for 10 `int`s, and assigns it to the variable `x`.
+
+Arrays can be indexed using `[]`. For example:
+```
+x[0] => decl y: int
+```
+This assigns the first element of `x` to the variable `y`.
+
+#### Map syntax
+Scale has a special syntax for creating and modifying arrays. For example:
+```
+[10 do i fib] => decl fibs: [int]
+```
+This creates an array of 10 elements, and assigns it to the variable `fibs`. Each element is the result of calling the `fib` function with the index as an argument.
+
+Modifying arrays is also simple. For example:
+```
+[fibs do val 2 *]
+```
+This multiplies each element of `fibs` by `2`.
+
+If you just want to loop over the array without modifying it, make sure to not leave any values on the stack. For example:
+```
+[fibs do val puts]
+```
+This prints each element of `fibs` to the console.
+
+### Imports
+Scale has a simple import system. For example:
+```
+import <file>
+```
+This imports the file named `file.scale` relative to the current file.
+
+```
+import <dir>.<file>
+```
+This imports the file named `file.scale` relative to the directory named `dir`.
+
+```
+import <module>
+```
+This imports the module named `module`.
+
+#### Modules
+Modules are defined by Scale frameworks. For example the following `index.drg` defines a module named `test`:
+```
+framework: {
+    # ...
+    modules: [
+        test: [
+            "foo.scale";
+            "bar.scale";
+            "baz.scale";
+        ];
+    ];
+};
+```
+This defines a module named `test` with the files `foo.scale`, `bar.scale`, and `baz.scale`.
+Importing this module will import all of the files in the module.
+
+### Macros
+Scale has a simple macro system. For example:
+```
+macro! MyMacro(str1, str2) {
+    concat { $str1 $str2 } => combined
+    expand {
+        $combined
+    }
+}
+```
+This defines a macro named `MyMacro` that takes two arguments, `str1` and `str2`. The macro expands to the value of `str1` concatenated with the value of `str2`.
+For example:
+```
+MyMacro! "Hello" "World!"
+```
+This expands to `"HelloWorld!"`.
+
+Explanation of the macro:
+```
+macro! MyMacro(str1, str2) {
+```
+This defines a macro named `MyMacro` that takes two arguments, `str1` and `str2`.
+
+```
+    concat { $str1 $str2 } => combined
+```
+The `concat` macro builtin creates a new string literal of the values of each argument concatenated together. This is assigned to the variable `combined`.
+The `$` before the variable name tells the compiler to expand the variable before passing it to the macro builtin, otherwise it would pass the variable name as a string literal and the resulting string would be `str1str2`.
+
+```
+    expand { $combined }
+```
+The `expand` macro builtin expands the value of the argument. This is used to return the value of `combined` from the macro.
+Any token not prefixed with `$` is passed to the macro builtin as the literal token, which means you could have a macro like this:
+```
+macro! IntVar(name) {
+    expand {
+        decl $name : int
+    }
+}
+```
+Here, the `expand` macro builtin is passed the literal token `decl`, and the variable `name` is expanded to the value of the argument.
+
+### Data Type Literals
+A few of Scale's data types have literals. For example:
+```
+{1, 2, 3} as [int] => decl x: [int]
+```
+This creates an array of `int`s with the values `1`, `2`, and `3`, and assigns it to the variable `x`.
+
+```
+(1, 2) => decl x: Pair
+```
+This creates a `Pair` with the values `1` and `2`, and assigns it to the variable `x`.
+This assumes that the `Pair` struct has been declared.
+
+```
+(1, 2, 3) => decl x: Triple
+```
+This creates a `Triple` with the values `1`, `2`, and `3`, and assigns it to the variable `x`.
+This assumes that the `Triple` struct has been declared.
+
 
 ### Examples
 For more detailed examples of the language, see the examples folder at [The Repository](https://github.com/StonkDragon/Scale)

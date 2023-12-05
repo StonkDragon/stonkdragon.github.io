@@ -338,44 +338,44 @@ Importing this module will import all of the files in the module.
 Scale has a simple macro system. For example:
 ```
 macro! MyMacro(str1, str2) {
-    concat { $str1 $str2 } => combined
-    expand {
-        $combined
-    }
+    $str1 ": " + $str2 +
 }
 ```
-This defines a macro named `MyMacro` that takes two arguments, `str1` and `str2`. The macro expands to the value of `str1` concatenated with the value of `str2`.
+This defines a macro named `MyMacro` that takes two arguments, `str1` and `str2`.
 For example:
 ```
 MyMacro! "Hello" "World!"
 ```
-This expands to `"HelloWorld!"`.
+This expands to `"Hello" ": " + "World!" +`.
 
-Explanation of the macro:
+More complex macros can be defined as such:
 ```
-macro! MyMacro(str1, str2) {
+macro! ComplicatedMacro() in "lib"
 ```
-This defines a macro named `MyMacro` that takes two arguments, `str1` and `str2`.
+Where `lib` is the name of a dynamic library. The dynamic library must be visible to the compiler.
+These function-like macros must be defined like so:
+```
+foreign function ComplicatedMacro(loc: SourceLocation, parser: Parser): Result
+```
+Where `loc` is the location of the macro invocation, and `parser` can be used to parse the arguments to the macro.
+The return value must be of type `Result`, where the `Ok` variant is `[Token]` and the `Err` variant is `MacroError`.
+For example:
+```
+foreign function ComplicatedMacro(loc: SourceLocation, parser: Parser): Result
+    parser:peek => decl token: Token?
+    if token nil == then
+        MacroError {
+            "Expected a token, but got nothing" => msg
+            nextTok.location => location
+        } Result::Err return
+    fi
 
+    new<Token>{
+        token!!
+    } Result::Ok return
+end
 ```
-    concat { $str1 $str2 } => combined
-```
-The `concat` macro builtin creates a new string literal of the values of each argument concatenated together. This is assigned to the variable `combined`.
-The `$` before the variable name tells the compiler to expand the variable before passing it to the macro builtin, otherwise it would pass the variable name as a string literal and the resulting string would be `str1str2`.
-
-```
-    expand { $combined }
-```
-The `expand` macro builtin expands the value of the argument. This is used to return the value of `combined` from the macro.
-Any token not prefixed with `$` is passed to the macro builtin as the literal token, which means you could have a macro like this:
-```
-macro! IntVar(name) {
-    expand {
-        decl $name : int
-    }
-}
-```
-Here, the `expand` macro builtin is passed the literal token `decl`, and the variable `name` is expanded to the value of the argument.
+This macro will expand to the next token in the source file.
 
 ### Data Type Literals
 A few of Scale's data types have literals. For example:

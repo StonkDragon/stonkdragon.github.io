@@ -380,7 +380,7 @@ This macro will expand to the next token in the source file.
 ### Data Type Literals
 A few of Scale's data types have literals. For example:
 ```
-{1, 2, 3} as [int] => decl x: [int]
+new<int>{1, 2, 3} => decl x: [int]
 ```
 This creates an array of `int`s with the values `1`, `2`, and `3`, and assigns it to the variable `x`.
 
@@ -396,6 +396,29 @@ This assumes that the `Pair` struct has been declared.
 This creates a `Triple` with the values `1`, `2`, and `3`, and assigns it to the variable `x`.
 This assumes that the `Triple` struct has been declared.
 
+```
+(1 to 3) => decl x: Range
+```
+This creates a `Range` with the values `1` and `3`, and assigns it to the variable `x`.
+This assumes that the `Range` struct has been declared.
+
+```
+(1 to) => decl x: PartialRange
+```
+This creates a `PartialRange` with the lower bound `1`, and assigns it to the variable `x`.
+This assumes that the `PartialRange` struct has been declared.
+
+```
+(to 3) => decl x: PartialRange
+```
+This creates a `PartialRange` with the upper bound `3`, and assigns it to the variable `x`.
+This assumes that the `PartialRange` struct has been declared.
+
+```
+(to) => decl x: UnboundRange
+```
+This creates an `UnboundRange`, and assigns it to the variable `x`.
+This assumes that the `UnboundRange` struct has been declared.
 
 ### Examples
 For more detailed examples of the language, see the examples folder at [The Repository](https://github.com/StonkDragon/Scale)

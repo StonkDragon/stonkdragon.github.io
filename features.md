@@ -178,9 +178,9 @@ s.someString puts
 This prints `someString: Hello, World!` to the console.
 
 #### Pass-by-Value
-By default, structs in scale are passed by reference. This means that when you pass a struct to a function, the function will receive a pointer to the struct, and any changes made to the struct will be reflected in the original struct. If you want to pass a struct by value, you have to put `*` before the type. For example:
+By default, structs in scale are passed by reference. This means that when you pass a struct to a function, the function will receive a pointer to the struct, and any changes made to the struct will be reflected in the original struct. If you want to pass a struct by value, you have to put `@` before the type. For example:
 ```
-function increment(p: *Point): Point
+function increment(p: @Point): Point
     p.x 1 + => p.x
     p.y 1 + => p.y
     p return
